@@ -1,0 +1,67 @@
+﻿.el-row {
+    margin-bottom: 20px;
+}
+
+.el-col {
+    border-radius: 4px;
+}
+
+.bg-purple-dark {
+    background: #99a9bf;
+}
+
+.bg-purple {
+    background: #d3dce6;
+}
+
+.bg-purple-light {
+    background: #e5e9f2;
+}
+
+.grid-content {
+    border-radius: 4px;
+    min-height: 36px;
+}
+
+.row-bg {
+    padding: 10px 0;
+    background-color: #f9fafc;
+}
+
+.el-table {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+    .el-table .el-table__header th {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .el-table .el-table__body td {
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        font-weight: bold;
+    }
+
+.el-row {
+    margin-top: 2px;
+}
+
+.el-form-item__label {
+    font-family: var(--font-family);
+    font-size: 12px;
+}
+
+.el-form-item__label {
+    font-family: var(--font-family);
+    font-size: 12px;
+}
+
+.el-form-item input:focus {
+    border-color: #171a3d; /* Cambia el color a tu preferencia */
+}
+
+.el-form-item__content:focus-within {
+    border-color: #171a3d !important; /* Cambia el color a tu preferencia */
+}

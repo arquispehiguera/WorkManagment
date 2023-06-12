@@ -1,0 +1,42 @@
+﻿body {
+    margin: 0;
+}
+
+:root {
+    --color-text: #171a3d;
+    --font-family: 'Roboto Condensed', sans-serif;
+}
+
+.el-menu {
+    font-family: var(--font-family);
+}
+
+.avatar-container {
+    display: flex;
+    align-items: center;
+}
+
+.el-main {
+    background-color: #e4e4e4;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.el-submenu .el-tag {
+    color: var(--color-text);
+    font-family: var(--font-family);
+    background-color: white;
+}
+
+.el-col {
+    border-radius: 4px;
+}
+
+.el-menu-item a {
+    text-decoration: none;
+    color:white;
+}

@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "Usuarios";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/Usuarios.css" />
+}
+<el-row :gutter="20">
+    <el-col :span="6"><el-badge :value="tableData.length" class="item"> <el-button size="small">Usuarios</el-button></el-badge></el-col>
+</el-row>
+<el-button type="success" icon="el-icon-circle-plus" size="mini" v-on:click="showModal">Nuevo</el-button>
+
+<el-row :gutter="20">
+    <el-col :span="24">
+        <div class="grid-content bg-purple">
+            <template>
+                <el-table v-if="tableData.length > 0" :data="tableData.filter(data => {
+  if (!search) return true;
+  const searchTerm = search.toLowerCase();
+  return data.nombres.toLowerCase().includes(searchTerm) || data.dni.toString().includes(searchTerm);
+})" style="width: 100%">
+                    <el-table-column label="Fecha" prop="fechaCreacion">
+                        <template slot-scope="scope">
+                            <span>{{ formatDate(scope.row.fechaCreacion) }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="DNI" prop="dni"></el-table-column>
+                    <el-table-column label="Nombres" prop="nombres"></el-table-column>
+                    <el-table-column label="Apellidos" prop="apellidos"></el-table-column>
+                    <el-table-column label="Area" prop="idArea"></el-table-column>
+                    <el-table-column label="Email" prop="email"></el-table-column>
+                    <el-table-column label="Estado" prop="estado">
+                        <template slot-scope="scope">
+                            <i class="el-icon-success" v-if="scope.row.estado" style="color: #82E0AA"></i> <!-- Icono para 'Activo' -->
+                            <i class="el-icon-error" v-else style="color: red"></i> <!-- Icono para 'Inactivo' -->
+                            {{ scope.row.estado ? 'Activo' : 'Inactivo' }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column align="right">
+                        <template slot="header" slot-scope="scope">
+                            <el-input v-model="search" size="mini" placeholder="Buscar..." />
+                        </template>
+                        <template slot-scope="scope">
+                            <el-tooltip class="item" effect="dark" content="Editar usuario" placement="top">
+                                <el-button size="mini" v-on:click="handleEdit(scope.$index, scope.row)">Edit..</el-button>
+                            </el-tooltip>
+                            <el-tooltip class="item" effect="dark" content="Eliminar usuario" placement="top">
+                                <el-button size="mini" type="danger" v-on:click="handleDelete(scope.$index, scope.row)">Elim..</el-button>
+                            </el-tooltip>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-empty v-else description="No hay datos disponibles" />
+            </template>
+        </div>
+    </el-col>
+</el-row>
+<!--Dialog-->
+<el-dialog :visible.sync="modalVisible" title="Registro de nuevo usuario" v-on:close="closeModal">
+    <el-form ref="userForm" size="mini" :model="form">
+        <el-form-item label="DNI" :label-width="formLabelWidth">
+            <el-input v-model="form.dni" autocomplete="off" v-on:input="validateDNI"></el-input>
+        </el-form-item>
+        <el-form-item label="Area" :label-width="formLabelWidth">
+            <el-select v-model="form.area" placeholder="Please select an area">
+                <el-option v-for="area in areas" :key="area.idArea" :label="area.descripcion" :value="area.idArea"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item v-if="form.editing" label="Estado" :label-width="formLabelWidth">
+            <el-switch v-model="form.estado"   active-color="#13ce66"
+  inactive-color="#ff4949"></el-switch>
+        </el-form-item>
+        <el-form-item label="Nombres" :label-width="formLabelWidth">
+            <el-input v-model="form.nombres" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="Apellidos" :label-width="formLabelWidth">
+            <el-input v-model="form.apellidos" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="Email" :label-width="formLabelWidth">
+            <el-input v-model="form.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="Password" :label-width="formLabelWidth">
+            <el-input v-model="form.password" type="password" autocomplete="off" show-password></el-input>
+        </el-form-item>
+        <el-button v-on:click="closeModal" size="mini">Cancelar</el-button>
+        <el-button type="success" v-on:click="saveForm" size="mini">Guardar</el-button>
+    </el-form>
+</el-dialog>

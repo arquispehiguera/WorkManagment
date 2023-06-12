@@ -1,0 +1,123 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto Condensed">
+    <link rel="stylesheet" href="~/css/Loguin.css">
+
+    <script src="https://unpkg.com/vue@2.6.14/dist/vue.min.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <title>Título del documento</title>
+</head>
+<body>
+    <div class="container" id="app">
+        <div class="space1"><p>&copy; Arquitectura de Software.</p></div>
+        <div class="space2">
+            <el-form label-position="top">
+                <el-form-item>
+                    <h1>Bienvenido!</h1>
+                </el-form-item>
+                <el-form-item>
+                    <el-input v-model="username" placeholder="Usuario" v-on:input="validateDNI"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-input v-model="password" type="password" placeholder="Contraseña" show-password></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-link type="primary">¿Olvidaste tu contraseña?</el-link>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" :loading="isLoading" class="btn" v-on:click="login">Iniciar sesión</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                username: '',
+                password: '',
+                isLoading: false
+            },
+            methods: {
+                login() {
+                    if (!/^\d{8}$/.test(this.username)) {
+                        this.sendWarningMsg("DNI debe tener 8 digitos");
+                        return;
+                    }
+                    if (!this.password) {
+                        this.sendWarningMsg("Por favor, ingrese su contraseña");
+                        return;
+                    }
+
+                    this.isLoading = true; 
+
+                    const data = {
+                        Dni: this.username,
+                        Password: this.password
+                    };
+                    axios.post('/Loguin/Authenticate', data)
+                        .then(response => {
+                            if (response.status === 200) {
+                                if (response.data === "Autenticado") {
+                                    this.sendOKMsg("Autenticado");
+                                    window.location.href = '/Home/Index';
+                                } else {
+                                    this.sendWarningMsg(response.data);
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            this.sendErrorMsg();
+                        })
+                        .finally(() => {
+                            this.isLoading = false; 
+                        });
+                },
+                validateDNI() {
+                    const enteredValue = this.username;
+                    const numericValue = enteredValue.replace(/\D/g, '');
+                    const trimmedValue = numericValue.slice(0, 8);
+                    this.username = trimmedValue;
+                    if (trimmedValue.length !== 8) {
+                        this.dniError = true;
+                    } else {
+                        this.dniError = false;
+                    }
+                },
+                sendErrorMsg() {
+                    this.$message({
+                        showClose: true,
+                        message: '⚠️Oops, se ha producido un error interno consultar con el administrador.',
+                        type: 'error'
+                    });
+                },
+                sendOKMsg(msg) {
+                    this.$notify({
+                        title: 'Correcto',
+                        message: msg,
+                        type: 'success'
+                    });
+                },
+                sendWarningMsg(msg) {
+                    this.$message({
+                        showClose: true,
+                        message: msg,
+                        type: 'warning'
+                    });
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,211 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/vue@2.6.14/dist/vue.min.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto Condensed">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <link rel="stylesheet" href="~/css/site.css" />
+    <title>@ViewData["Title"]</title>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <div id="app" class="container">
+        <el-menu :default-active="activeIndex2"
+                 class="el-menu-demo"
+                 mode="horizontal"
+                 v-on:select="handleSelect"
+                 background-color="#171a3d"
+                 text-color="#fff"
+                 active-text-color="#fff">
+            <el-menu-item index="1"><a href="@Url.Action("Index", "Home")" >Inicio</a></el-menu-item>
+            <el-submenu index="2">
+                <template slot="title">
+                    Mantenimiento
+                </template>
+                <el-menu-item index="2-1"><a href="@Url.Action("Index", "User")" >Mantenimiento Usuarios</a></el-menu-item>
+                <el-menu-item index="2-2">Mantenimiento Areas</el-menu-item>
+                <el-menu-item index="2-3">Mantenimiento Proyectos</el-menu-item>
+            </el-submenu>
+            <el-menu-item index="3" disabled>Informacion</el-menu-item>
+            <el-submenu index="4" style="position: absolute; right: 20px;">
+                <template slot="title">
+                    <el-tag>@TempData["Nombres"]</el-tag>
+                    <el-avatar :size="38" :src="avatarSrc" fit="cover"></el-avatar>
+                </template>
+                <el-menu-item index="4-1">Configuraciones</el-menu-item>
+                <el-menu-item index="4-2">Salir</el-menu-item>
+            </el-submenu>
+        </el-menu>
+        <el-main>
+            @RenderBody()
+        </el-main>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                activeIndex2: '1',
+                avatarSrc: 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436180.jpg?w=740&t=st=1685473792~exp=1685474392~hmac=4350c270400da7629cb17ebeda08c5df7354a196064c2886b4b2c091ce844e53' // Replace with the actual path to your avatar image
+                ,
+                tableData: [],
+                search: '',
+                areas: [], // Arreglo para almacenar las opciones del select
+                modalVisible: false,
+                form: {
+                    dni: "",
+                    area: '',
+                    email: '',
+                    nombres: '',
+                    apellidos: '',
+                    pasword: '',
+                    editing: false
+                },
+                formLabelWidth: '120px'
+            },
+            mounted() {
+                this.getDataTable();
+                this.getAreas();
+            },
+            methods: {
+                handleSelect(key, keyPath) {
+                    console.log(key, keyPath);
+                },
+                handleEdit(index, row) {
+                    this.showModal();
+                    this.form.dni = row.dni;
+                    this.form.area = row.idArea;
+                    this.form.email = row.email;
+                    this.form.nombres = row.nombres;
+                    this.form.apellidos = row.apellidos;
+                    this.form.estado = row.estado;
+                    this.form.pasword = row.pasword;
+                    this.form.editing = true; // Establecemos la propiedad 'editing' en true para indicar que se está editando
+
+                },
+                handleDelete(index, row) {
+                    const dni = row.dni;
+                    const data = {
+                        Dni: dni
+                    };
+                    axios.post('/User/DeleteUsuario', data)
+                        .then(response => {
+                            this.sendOKMsg("Se elimino el registro");
+                            this.getDataTable();
+                        })
+                        .catch(error => {
+                            this.sendErrorMsg();
+                        });
+                },
+                getDataTable() {
+                    axios.post('/User/GetUsers', {
+                    }).then(response => {
+                        this.tableData = response.data;
+                    }).catch(error => {
+                        console.error(error);
+                    });
+                },
+                getAreas() {
+                    axios.post('/User/GetAreas')
+                        .then(response => {
+                            this.areas = response.data;
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                },
+                formatDate(dateString) {
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                },
+                sendErrorMsg() {
+                    this.$message({
+                        showClose: true,
+                        message: '⚠️Oops, se ha producido un error interno consultar con el administrador.',
+                        type: 'error'
+                    });
+                },
+                sendOKMsg(msg) {
+                    this.$notify({
+                        title: 'Correcto',
+                        message: msg,
+                        type: 'success'
+                    });
+                },
+                sendWarningMsg(msg) {
+                    this.$message({
+                        showClose: true,
+                        message: msg,
+                        type: 'warning'
+                    });
+                },
+                validateDNI() {
+                    const enteredValue = this.form.dni;
+                    const isNumeric = /^\d+$/.test(enteredValue);
+                    if (!isNumeric) {
+                        this.form.dni = "";
+                    }
+                },
+                saveForm() {
+                    if (!/^\d{8}$/.test(this.form.dni)) {
+                        this.sendWarningMsg("DNI debe tener 8 digits");
+                        return;
+                    }
+                    if (!this.form.area) {
+                        this.sendWarningMsg("Por favor, seleccione un area");
+                        return;
+                    }
+                    if (!this.form.nombres) {
+                        this.sendWarningMsg("Por favor, Ingrese un nombre");
+                        return;
+                    }
+                    if (!this.form.apellidos) {
+                        this.sendWarningMsg("Por favor, Ingrese un apellido");
+                        return;
+                    }
+                    if (!/^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(this.form.email)) {
+                        this.sendWarningMsg("Por favor, ingrese un email válido");
+                        return;
+                    }
+                    if (!this.form.password) {
+                        this.sendWarningMsg("Por favor, Ingrese una contraseña");
+                        return;
+                    }
+
+                    const data = {
+                        Dni: this.form.dni,
+                        IdArea: this.form.area,
+                        Nombres: this.form.nombres,
+                        Apellidos: this.form.apellidos,
+                        Email: this.form.email,
+                        Password: this.form.password
+                    };
+                    axios.post('/User/InsertUsuario', data)
+                        .then(response => {
+                            this.sendOKMsg("Se guardaron los datos");
+                            this.closeModal();
+                            this.getDataTable();
+                        })
+                        .catch(error => {
+                            this.sendErrorMsg();
+                        });
+                },
+                showModal() {
+                    this.modalVisible = true;
+                },
+                closeModal() {
+                    this.form = {};
+                    this.modalVisible = false;
+                }
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,98 @@
+﻿:root {
+    --color-text: #171a3d;
+    --font-family: 'Roboto Condensed', sans-serif;
+}
+
+body {
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+}
+
+.space1 {
+    flex: 1;
+    background-image: url("https://www.bbva.com/wp-content/uploads/2018/04/equipo-startup-bbva-1-e1524492124593.jpg");
+    background-size: cover;
+    background-position: center;
+}
+
+.space2 {
+    flex: 1;
+    background-color: #e3e3e3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.el-button {
+    width: 100%;
+}
+
+.el-form-item {
+    margin-bottom: 5px;
+}
+
+.el-form {
+    background-color: #ffffff;
+    padding: 60px;
+    border-radius: 8px;
+}
+
+    .el-form h1 {
+        text-align: center;
+        font-size: 16px;
+        font-family: var(--font-family);
+        color: var(--color-text);
+    }
+
+    .el-form .el-link, .el-form .el-link:hover {
+        font-size: 13px;
+        float: right;
+        font-family: var(--font-family);
+        color: var(--color-text);
+    }
+
+.btn, .btn:hover {
+    background-color: #171a3d;
+    border: none;
+}
+.btn:focus {
+        background-color: #171a3d;
+        border: none;
+        color: #ffffff; /* Agrega el color de texto deseado */
+ }
+.btn:active {
+    transform: scale(0.98);
+    background-color: #171a3d;
+    border: none;
+}
+
+.el-form-item input:focus {
+    border-color: #171a3d; /* Cambia el color a tu preferencia */
+}
+
+.space1 p {
+    font-family: var(--font-family);
+    font-size: 16px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .space1 {
+        display: none;
+    }
+
+    .space2 {
+        flex: 1;
+    }
+}
